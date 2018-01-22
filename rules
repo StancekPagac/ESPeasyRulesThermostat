@@ -1,29 +1,34 @@
 on System#Boot do
   timerSet,1,10
+  //rele GPIO5
+  //LED GPIO12
 endon
 
 on AutoMode do
   if %systime% < 23:00:00
-    gpio,16,1 // zap
+    [LEDpin#value] = 1 // zap
   else 
-    gpio,16,0 // vyp
+    [LEDpin#value] = 0 // vyp
   endif
   if %systime% < 16:00:00
-    gpio,16,0 // vyp
+    [LEDpin#value] = 0 // vyp
   endif
   if %systime% < 6:30:00
-    gpio,16,1 // zap
+    [LEDpin#value] = 1 // zap
   endif
   if %systime% < 4:30:00
-    gpio,16,0 // vyp
+    [LEDpin#value] = 0 // vyp
   endif
+  
+  gpio,5,[LEDpin#value]
 endon
 
 on Rules#Timer=1 do
-  if %sysyear% < 2018
+  if %sysyear% > 2017
     event,AutoMode
   else
-    gpio,16,0 // vyp
+    [LEDpin#value] = 0 
+    gpio,5,0 // vyp
   endif
   
   //SendToHTTP 192.168.0.52,8080,/json.htm?type=command&param=switchlight&idx=174&switchcmd=On
