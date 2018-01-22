@@ -1,34 +1,31 @@
-On System#Boot do
+on System#Boot do
   timerSet,1,10
 endon
 
-On AutoMode do
-  If %systime% < 23:00:00
-    Gpio,16,1 // zap
+on AutoMode do
+  if %systime% < 23:00:00
+    gpio,16,1 // zap
   else 
-    Gpio,16,0 // vyp
-  Endif
-  If %systime% < 16:00:00
-    Gpio,16,0 // vyp
-  Endif
-  If %systime% < 6:30:00
-    Gpio,16,1 // zap
-  Endif
-  If %systime% < 4:30:00
-    Gpio,16,0 // vyp
-  Endif
+    gpio,16,0 // vyp
+  endif
+  if %systime% < 16:00:00
+    gpio,16,0 // vyp
+  endif
+  if %systime% < 6:30:00
+    gpio,16,1 // zap
+  endif
+  if %systime% < 4:30:00
+    gpio,16,0 // vyp
+  endif
 endon
 
-On Rules#Timer=1 do
-  If %sysyear% < 2018
-  If %systime% < 23:00:00
-    Gpio,16,1 // zap
-  else 
-    Gpio,16,0 // vyp
-  Endif
-  If %systime% < 16:00:00
-    Gpio,16,0 // vyp
-  Endif
+on Rules#Timer=1 do
+  if %sysyear% < 2018
+    event,AutoMode
+  else
+    gpio,16,0 // vyp
+  endif
+  
   //SendToHTTP 192.168.0.52,8080,/json.htm?type=command&param=switchlight&idx=174&switchcmd=On
   timerSet,1,10
 endon
