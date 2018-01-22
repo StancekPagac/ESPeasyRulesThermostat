@@ -1,33 +1,51 @@
 on System#Boot do
   timerSet,1,10
+  [LED#value]=0
   //rele GPIO5
   //LED GPIO12
 endon
 
-on AutoMode do
-  if %systime% < 23:00:00
-    [LEDpin#value] = 1 // zap
-  else 
-    [LEDpin#value] = 0 // vyp
-  endif
-  if %systime% < 16:00:00
-    [LEDpin#value] = 0 // vyp
-  endif
-  if %systime% < 6:30:00
-    [LEDpin#value] = 1 // zap
-  endif
-  if %systime% < 4:30:00
-    [LEDpin#value] = 0 // vyp
+on AutoTemp do
+  [termostat#AP]=([chodbaTerm#temp]+[koupelna#temp])/2 
+    
+  if [termostat#AP]>[termostat#SP]
+    [LED#value]=0 
+  else
+    [LED#value]=1
   endif
   
-  gpio,5,[LEDpin#value]
+  if [termostat#AP]<14.0  // bezpecnostni zap           
+    [LED#value]=1    
+  endif
+  if [termostat#AP]>23.0  // bezpecnostni vyp           
+    [LED#value]=0    
+  endif
+endon
+
+on AutoTime do
+  if %systime% < 23:00:00
+    [LED#value] = 1 // zap
+  else 
+    [LED#value] = 0 // vyp
+  endif
+  if %systime% < 16:00:00
+    [LED#value] = 0 // vyp
+  endif
+  if %systime% < 6:30:00
+    [LED#value] = 1 // zap
+  endif
+  if %systime% < 4:30:00
+    [LED#value] = 0 // vyp
+  endif
 endon
 
 on Rules#Timer=1 do
   if %sysyear% > 2017
-    event,AutoMode
+    event,AutoTime
+    event,AutoTemp
+    gpio,5,[LED#value]
   else
-    [LEDpin#value] = 0 
+    [LED#value] = 0 
     gpio,5,0 // vyp
   endif
   
