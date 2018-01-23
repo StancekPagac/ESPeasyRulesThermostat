@@ -1,5 +1,6 @@
  --     Replace "consigne" with target temperature
  --   Replace "hysteresis"
+ -- https://www.domoticz.com/wiki/Plugins/Smart_Virtual_Thermostat.html
  --   Replace "sonde" with temperature sensor
  --   Replace "thermostat" with virtual thermostat switch
  --   Replace "radiateur" with heating source sensor
