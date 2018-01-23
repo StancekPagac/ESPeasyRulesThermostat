@@ -1,0 +1,41 @@
+ --     Replace "consigne" with target temperature
+ --   Replace "hysteresis"
+ --   Replace "sonde" with temperature sensor
+ --   Replace "thermostat" with virtual thermostat switch
+ --   Replace "radiateur" with heating source sensor
+ -- Alexandre DUBOIS - 2014
+ -- This script allows to maintain the temperatue between 19°C et 21°C when virtual
+ -- 'Thermostat salon' is ON.
+ 	
+ --------------------------------
+ ------ Start of edit section ------
+ --------------------------------
+ local consigne = 20  --Température de consigne
+ local hysteresis = 0.5 --Valeur seuil pour éviter que le relai ne cesse de commuter dans les 2 sens
+ local sonde = 'Salon' --Nom de la sonde de température
+ local thermostat = 'Thermostat salon' --Nom de l'interrupteur virtuel du thermostat
+ local radiateur = 'Radiateur salon' --Nom du radiateur à allumer/éteindre
+ --------------------------------
+ -- End of edit section --
+ --------------------------------
+ 	
+ commandArray = {}
+ --Oregon sensor 'Salon' send temperature every 40s. This will be the execution frequency of this script.
+ if (devicechanged[sonde]) then
+         local temperature = devicechanged[string.format('%s_Temperature', sonde)] --Temperature relevée dans le salon
+     --On n'agit que si le "Thermostat" est actif
+     if (otherdevices[thermostat]=='On') then
+         print('-- Gestion du thermostat pour le salon --')
+ 	
+         if (temperature < (consigne - hysteresis) ) then
+             print('Allumage du chauffage dans le salon')
+             commandArray[radiateur]='On'
+ 	
+             elseif (temperature > (consigne + hysteresis)) then
+                 print('Extinction du chauffage dans le salon')
+             commandArray[radiateur]='Off'
+ 	
+             end
+         end
+ end
+ return commandArray
